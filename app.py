@@ -46,27 +46,45 @@ plt.show()
 
 import streamlit as st
 from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 
-# Load data & train model
+# Load Iris dataset
 iris = load_iris()
 X, y = iris.data, iris.target
-model = DecisionTreeClassifier()
-model.fit(X, y)
 
-# Streamlit UI
-st.title("🌸 Iris Species Predictor")
-st.markdown("Give flower measurements and we'll predict the species!")
+# Page title
+st.title("🌸 Iris Species Classifier")
+st.write("Choose values for each flower feature and select a model to predict the Iris species.")
 
-sepal_length = st.slider('Sepal length (cm)', 4.0, 8.0, 5.0)
-sepal_width  = st.slider('Sepal width (cm)', 2.0, 4.5, 3.0)
-petal_length = st.slider('Petal length (cm)', 1.0, 7.0, 4.0)
-petal_width  = st.slider('Petal width (cm)', 0.1, 2.5, 1.0)
+# Feature inputs
+sepal_length = st.slider("Sepal Length (cm)", 4.0, 8.0, 5.1)
+sepal_width = st.slider("Sepal Width (cm)", 2.0, 4.5, 3.5)
+petal_length = st.slider("Petal Length (cm)", 1.0, 7.0, 1.4)
+petal_width = st.slider("Petal Width (cm)", 0.1, 2.5, 0.2)
 
 input_data = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
-prediction = model.predict(input_data)
-species = iris.target_names[prediction[0]]
 
-st.success(f"🌼 Predicted Species: **{species}**")
+# Model selector
+model_choice = st.selectbox("Choose a model", ["Decision Tree", "KNN", "Logistic Regression"])
+
+# Train model based on selection
+if model_choice == "Decision Tree":
+    model = DecisionTreeClassifier()
+elif model_choice == "KNN":
+    model = KNeighborsClassifier()
+elif model_choice == "Logistic Regression":
+    model = LogisticRegression(max_iter=200)
+
+model.fit(X, y)
+
+# Predict species
+prediction = model.predict(input_data)
+predicted_species = iris.target_names[prediction[0]]
+
+# Display result
+st.success(f"🌼 Predicted Iris Species: **{predicted_species}**")
 
